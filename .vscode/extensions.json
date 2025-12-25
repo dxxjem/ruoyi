@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "vscjava.vscode-java-pack",
+    "vmware.vscode-boot-dev-pack",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "vue.volar",
+    "vue.vscode-typescript-vue-plugin"
+  ]
+}

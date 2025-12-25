@@ -1,0 +1,37 @@
+{
+  // Java 配置
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.debug.settings.enableRunDebugCodeLens": true,
+  "java.server.launchMode": "Standard",
+  "java.import.gradle.enabled": false,
+  "java.maven.downloadSources": true,
+  "java.compile.nullAnalysis.mode": "automatic",
+
+  // 编辑器配置
+  "editor.formatOnSave": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  // 文件排除
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/node_modules": true,
+    "**/target": true,
+    "**/.classpath": true,
+    "**/.project": true,
+    "**/.settings": true,
+    "**/.factorypath": true
+  },
+
+  // 文件监听排除
+  "files.watcherExclude": {
+    "**/target": true,
+    "**/node_modules": true,
+    "**/.git/objects": true
+  }
+}
