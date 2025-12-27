@@ -1,0 +1,32 @@
+# 测试环境配置（覆盖local profile）
+--- # 配置SnailJob（测试环境提供占位值，不实际连接）
+snail-job:
+  enabled: false
+  port: 17888
+  server:
+    host: 127.0.0.1
+
+--- # 禁用监控中心
+spring.boot.admin.client:
+  enabled: false
+
+--- # 数据源配置
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    dynamic:
+      primary: master
+      strict: false
+      datasource:
+        master:
+          type: com.zaxxer.hikari.HikariDataSource
+          driverClassName: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://localhost:3306/ry?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
+          username: root
+          password: 123456
+        vector:
+          type: com.zaxxer.hikari.HikariDataSource
+          driverClassName: org.postgresql.Driver
+          url: jdbc:postgresql://localhost:5432/compliance_vector_db?useUnicode=true&characterEncoding=utf8&useSSL=false&autoReconnect=true&reWriteBatchedInserts=true
+          username: postgres
+          password: postgres

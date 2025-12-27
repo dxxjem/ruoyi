@@ -70,6 +70,13 @@ spring:
 #          url: jdbc:postgresql://localhost:5432/postgres?useUnicode=true&characterEncoding=utf8&useSSL=true&autoReconnect=true&reWriteBatchedInserts=true
 #          username: root
 #          password: root
+        # PostgreSQL向量数据源（合规性检查模块）
+        vector:
+          type: ${spring.datasource.type}
+          driverClassName: org.postgresql.Driver
+          url: jdbc:postgresql://localhost:5432/compliance_vector_db?useUnicode=true&characterEncoding=utf8&useSSL=false&autoReconnect=true&reWriteBatchedInserts=true
+          username: postgres
+          password: postgres
 #        sqlserver:
 #          type: ${spring.datasource.type}
 #          driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
@@ -268,3 +275,16 @@ justauth:
       client-id: 10**********6
       client-secret: 1f7d08**********5b7**********29e
       redirect-uri: ${justauth.address}/social-callback?source=gitea
+
+--- # 合规性检查模块配置
+compliance:
+  # OpenAI Embedding API配置
+  openai:
+    # API密钥（请替换为实际密钥）
+    api-key: your-openai-api-key
+    # 向量模型
+    embedding-model: text-embedding-3-small
+    # API地址
+    api-url: https://api.openai.com/v1/embeddings
+    # 超时时间（毫秒）
+    timeout: 30000

@@ -3,18 +3,18 @@
   "configurations": [
     {
       "type": "java",
-      "name": "🚀 RuoYi Backend (Maven)",
+      "name": "Backend (Maven)",
       "request": "launch",
       "mainClass": "org.dromara.DromaraApplication",
       "projectName": "ruoyi-admin",
       "cwd": "${workspaceFolder}/RuoYi-Vue-Plus-v5.5.1",
-      "vmArgs": "-Dspring.profiles.active=dev -Xms512m -Xmx1024m",
+      "vmArgs": "-Dspring.profiles.active=dev -Dlogging.level=info -Xms512m -Xmx1024m",
       "noDebug": false,
       "console": "internalConsole"
     },
     {
       "type": "java",
-      "name": "🚀 SnailJob Server (Maven)",
+      "name": "SnailJob Server (Maven)",
       "request": "launch",
       "mainClass": "org.dromara.snailjob.SnailJobServerApplication",
       "projectName": "ruoyi-snailjob-server",
@@ -25,7 +25,7 @@
     },
     {
       "type": "java",
-      "name": "🚀 Monitor Admin (Maven)",
+      "name": "Monitor Admin (Maven)",
       "request": "launch",
       "mainClass": "org.dromara.monitor.admin.MonitorAdminApplication",
       "projectName": "ruoyi-monitor-admin",

@@ -93,6 +93,12 @@
             <artifactId>ruoyi-workflow</artifactId>
         </dependency>
 
+        <!--  合规性检查模块  -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-compliance</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>de.codecentric</groupId>
             <artifactId>spring-boot-admin-starter-client</artifactId>
