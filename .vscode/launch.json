@@ -9,7 +9,6 @@
       "projectName": "ruoyi-admin",
       "cwd": "${workspaceFolder}/RuoYi-Vue-Plus-v5.5.1",
       "vmArgs": "-Dspring.profiles.active=dev -Dlogging.level=info -Xms512m -Xmx1024m",
-      "noDebug": false,
       "console": "internalConsole"
     },
     {
@@ -20,7 +19,6 @@
       "projectName": "ruoyi-snailjob-server",
       "cwd": "${workspaceFolder}/RuoYi-Vue-Plus-v5.5.1/ruoyi-extend/ruoyi-snailjob-server",
       "vmArgs": "-Dspring.profiles.active=dev -Xms256m -Xmx512m",
-      "noDebug": false,
       "console": "internalConsole"
     },
     {
@@ -31,7 +29,6 @@
       "projectName": "ruoyi-monitor-admin",
       "cwd": "${workspaceFolder}/RuoYi-Vue-Plus-v5.5.1/ruoyi-extend/ruoyi-monitor-admin",
       "vmArgs": "-Dspring.profiles.active=dev -Xms256m -Xmx512m",
-      "noDebug": false,
       "console": "internalConsole"
     }
   ]

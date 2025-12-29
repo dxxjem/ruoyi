@@ -53,6 +53,7 @@ DROP TABLE IF EXISTS compliance_regulation CASCADE;
 
 CREATE TABLE compliance_regulation (
     regulation_id BIGSERIAL PRIMARY KEY,
+    tenant_id VARCHAR(20) DEFAULT '000000',
     regulation_code VARCHAR(100) NOT NULL UNIQUE,
     regulation_name VARCHAR(500) NOT NULL,
     category VARCHAR(100),
@@ -70,6 +71,7 @@ CREATE TABLE compliance_regulation (
 
 COMMENT ON TABLE compliance_regulation IS '法规库表';
 COMMENT ON COLUMN compliance_regulation.regulation_id IS '法规ID';
+COMMENT ON COLUMN compliance_regulation.tenant_id IS '租户编号';
 COMMENT ON COLUMN compliance_regulation.regulation_code IS '法规编码';
 COMMENT ON COLUMN compliance_regulation.regulation_name IS '法规名称';
 COMMENT ON COLUMN compliance_regulation.category IS '分类';
@@ -91,6 +93,7 @@ DROP TABLE IF EXISTS compliance_rule CASCADE;
 
 CREATE TABLE compliance_rule (
     rule_id BIGSERIAL PRIMARY KEY,
+    tenant_id VARCHAR(20) DEFAULT '000000',
     rule_code VARCHAR(100) NOT NULL UNIQUE,
     rule_name VARCHAR(200) NOT NULL,
     rule_type VARCHAR(20) NOT NULL, -- 'HARD' or 'RAG'
@@ -109,6 +112,7 @@ CREATE TABLE compliance_rule (
 
 COMMENT ON TABLE compliance_rule IS '规则配置表';
 COMMENT ON COLUMN compliance_rule.rule_id IS '规则ID';
+COMMENT ON COLUMN compliance_rule.tenant_id IS '租户编号';
 COMMENT ON COLUMN compliance_rule.rule_code IS '规则编码';
 COMMENT ON COLUMN compliance_rule.rule_name IS '规则名称';
 COMMENT ON COLUMN compliance_rule.rule_type IS '规则类型（HARD-硬规则 RAG-语义规则）';
@@ -170,10 +174,12 @@ BEGIN
 END $$;
 
 -- 常规索引
+CREATE INDEX IF NOT EXISTS idx_regulation_tenant_id ON compliance_regulation(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_regulation_code ON compliance_regulation(regulation_code);
 CREATE INDEX IF NOT EXISTS idx_regulation_category ON compliance_regulation(category);
 CREATE INDEX IF NOT EXISTS idx_regulation_status ON compliance_regulation(status);
 
+CREATE INDEX IF NOT EXISTS idx_rule_tenant_id ON compliance_rule(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_rule_code ON compliance_rule(rule_code);
 CREATE INDEX IF NOT EXISTS idx_rule_type ON compliance_rule(rule_type);
 CREATE INDEX IF NOT EXISTS idx_rule_category ON compliance_rule(category);
@@ -187,25 +193,49 @@ CREATE INDEX IF NOT EXISTS idx_chunk_index ON compliance_document_chunk(chunk_in
 -- =====================================================
 
 -- 示例法规
-INSERT INTO compliance_regulation (regulation_code, regulation_name, category, effective_date, status, create_by) VALUES
-('GB50016-2014', '建筑设计防火规范', '消防', '2014-08-27', '0', 1),
-('JGJ36-2016', '宿舍建筑设计规范', '建筑', '2016-10-01', '0', 1)
+INSERT INTO compliance_regulation (tenant_id, regulation_code, regulation_name, category, effective_date, status, create_by) VALUES
+('000000', 'GB50016-2014', '建筑设计防火规范', '消防', '2014-08-27', '0', 1),
+('000000', 'JGJ36-2016', '宿舍建筑设计规范', '建筑', '2016-10-01', '0', 1)
 ON CONFLICT (regulation_code) DO NOTHING;
 
 -- 示例规则（硬规则）
-INSERT INTO compliance_rule (rule_code, rule_name, rule_type, category, keywords, description, severity, status, rule_order, create_dept, create_by) VALUES
-('RULE-HARD-001', '防火间距检查', 'HARD', '消防', ARRAY['防火间距', '不应小于', '米'], '检查文档中是否包含防火间距要求', 'HIGH', '0', 1, 103, 1),
-('RULE-HARD-002', '疏散通道宽度检查', 'HARD', '消防', ARRAY['疏散通道', '净宽度', '不应小于'], '检查疏散通道净宽度要求', 'HIGH', '0', 2, 103, 1),
-('RULE-HARD-003', 'RTO指标检查', 'HARD', '运维', ARRAY['RTO', '恢复时间', '目标'], '检查是否包含RTO指标要求', 'MEDIUM', '0', 3, 103, 1)
+INSERT INTO compliance_rule (tenant_id, rule_code, rule_name, rule_type, category, keywords, description, severity, status, rule_order, create_dept, create_by) VALUES
+('000000', 'RULE-HARD-001', '防火间距检查', 'HARD', '消防', ARRAY['防火间距', '不应小于', '米'], '检查文档中是否包含防火间距要求', 'HIGH', '0', 1, 103, 1),
+('000000', 'RULE-HARD-002', '疏散通道宽度检查', 'HARD', '消防', ARRAY['疏散通道', '净宽度', '不应小于'], '检查疏散通道净宽度要求', 'HIGH', '0', 2, 103, 1),
+('000000', 'RULE-HARD-003', 'RTO指标检查', 'HARD', '运维', ARRAY['RTO', '恢复时间', '目标'], '检查是否包含RTO指标要求', 'MEDIUM', '0', 3, 103, 1)
 ON CONFLICT (rule_code) DO NOTHING;
 
 -- =====================================================
 -- 第五部分: 防御性检查和修复
 -- =====================================================
 
--- 防御性检查: 确保create_dept字段存在（处理已存在的表）
+-- 防御性检查: 确保create_dept和tenant_id字段存在（处理已存在的表）
 DO $$
 BEGIN
+    -- 检查 compliance_rule 表是否有 tenant_id 字段
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_name = 'compliance_rule'
+        AND column_name = 'tenant_id'
+    ) THEN
+        ALTER TABLE compliance_rule ADD COLUMN tenant_id VARCHAR(20) DEFAULT '000000';
+        COMMENT ON COLUMN compliance_rule.tenant_id IS '租户编号';
+        UPDATE compliance_rule SET tenant_id = '000000' WHERE tenant_id IS NULL;
+        RAISE NOTICE 'compliance_rule表已添加tenant_id字段';
+    END IF;
+
+    -- 检查 compliance_regulation 表是否有 tenant_id 字段
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_name = 'compliance_regulation'
+        AND column_name = 'tenant_id'
+    ) THEN
+        ALTER TABLE compliance_regulation ADD COLUMN tenant_id VARCHAR(20) DEFAULT '000000';
+        COMMENT ON COLUMN compliance_regulation.tenant_id IS '租户编号';
+        UPDATE compliance_regulation SET tenant_id = '000000' WHERE tenant_id IS NULL;
+        RAISE NOTICE 'compliance_regulation表已添加tenant_id字段';
+    END IF;
+
     -- 检查 compliance_rule 表是否有 create_dept 字段
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.columns
