@@ -12,10 +12,13 @@ import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.web.core.BaseController;
 import org.dromara.compliance.domain.bo.ComplianceRegulationBo;
+import org.dromara.compliance.domain.vo.ComplianceRegulationUploadVo;
 import org.dromara.compliance.domain.vo.ComplianceRegulationVo;
 import org.dromara.compliance.service.IComplianceRegulationService;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -60,7 +63,12 @@ public class ComplianceRegulationController extends BaseController {
     @SaCheckPermission("compliance:regulation:query")
     @GetMapping(value = "/{regulationId}")
     public R<ComplianceRegulationVo> getInfo(@PathVariable Long regulationId) {
-        return R.ok(regulationService.selectById(regulationId));
+        ComplianceRegulationVo vo = regulationService.selectById(regulationId);
+        // 如果有文件URL，查询并附加完整的文件信息用于前端回显
+        if (vo != null && vo.getFileUrl() != null && !vo.getFileUrl().isEmpty()) {
+            regulationService.attachFileInfo(vo);
+        }
+        return R.ok(vo);
     }
 
     /**
@@ -104,5 +112,20 @@ public class ComplianceRegulationController extends BaseController {
     public R<Void> remove(@PathVariable Long[] regulationIds) {
         regulationService.deleteByIds(List.of(regulationIds));
         return R.ok();
+    }
+
+    /**
+     * 上传法规文件
+     *
+     * @param regulationId 法规ID
+     * @param file 文件
+     */
+    @SaCheckPermission("compliance:regulation:edit")
+    @Log(title = "法规管理", businessType = BusinessType.UPDATE)
+    @PostMapping(value = "/upload/{regulationId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public R<ComplianceRegulationUploadVo> upload(
+        @PathVariable Long regulationId,
+        @RequestPart("file") MultipartFile file) {
+        return R.ok(regulationService.uploadRegulationFile(regulationId, file));
     }
 }

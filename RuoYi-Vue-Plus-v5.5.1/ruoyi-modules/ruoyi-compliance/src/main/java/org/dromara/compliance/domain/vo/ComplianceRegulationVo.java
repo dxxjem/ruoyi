@@ -59,10 +59,15 @@ public class ComplianceRegulationVo implements Serializable {
     private String status;
 
     /**
-     * 文件URL
+     * 文件URL（存储ossId）
      */
     @ExcelProperty(value = "文件URL")
     private String fileUrl;
+
+    /**
+     * 文件名（用于前端显示）
+     */
+    private String fileName;
 
     /**
      * 文件大小（字节）

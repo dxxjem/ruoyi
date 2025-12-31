@@ -7,11 +7,14 @@
   "java.maven.downloadSources": true,
   "java.compile.nullAnalysis.mode": "automatic",
 
+  "files.autoRefreshExplorer": true,
   // 编辑器配置
   "editor.formatOnSave": false,
+
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
+
 
   // 文件排除
   "files.exclude": {

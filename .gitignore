@@ -1,0 +1,36 @@
+# Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.DS_Store
+
+# Logs
+*.log
+
+# Node (前端项目)
+node_modules/
+dist/
+
+# 临时文件
+*.swp
+*.tmp
+*.bak
+nul
+query
+
+# 其他
+AGENTS.md
+*.docx
+configure_seoweedfs.sql
+start-services.bat

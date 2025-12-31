@@ -19,6 +19,7 @@ export interface RegulationVO extends BaseEntity {
   effectiveDate?: string;
   status: string;
   fileUrl?: string;
+  fileName?: string;
   fileSize?: number;
   remark?: string;
 }
@@ -34,6 +35,18 @@ export interface RegulationForm {
   effectiveDate?: string;
   status?: string;
   fileUrl?: string;
+  fileName?: string;
   fileSize?: number;
   remark?: string;
+}
+
+/**
+ * 法规文件上传响应类型
+ */
+export interface RegulationUploadVO {
+  regulationId: string | number;
+  url: string;
+  fileName: string;
+  ossId: string;
+  fileSize: number;
 }

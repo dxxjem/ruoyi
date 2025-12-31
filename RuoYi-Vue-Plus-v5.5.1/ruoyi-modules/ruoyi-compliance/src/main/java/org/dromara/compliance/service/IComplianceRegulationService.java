@@ -3,7 +3,9 @@ package org.dromara.compliance.service;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.compliance.domain.bo.ComplianceRegulationBo;
+import org.dromara.compliance.domain.vo.ComplianceRegulationUploadVo;
 import org.dromara.compliance.domain.vo.ComplianceRegulationVo;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -69,4 +71,20 @@ public interface IComplianceRegulationService {
      * @return 结果
      */
     boolean checkCodeUnique(ComplianceRegulationBo bo);
+
+    /**
+     * 上传法规文件并更新法规记录
+     *
+     * @param regulationId 法规ID
+     * @param file 文件
+     * @return 上传结果
+     */
+    ComplianceRegulationUploadVo uploadRegulationFile(Long regulationId, MultipartFile file);
+
+    /**
+     * 附加文件信息到法规VO（用于前端文件回显）
+     *
+     * @param vo 法规VO对象
+     */
+    void attachFileInfo(ComplianceRegulationVo vo);
 }

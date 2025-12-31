@@ -57,6 +57,12 @@
             <artifactId>ruoyi-common-idempotent</artifactId>
         </dependency>
 
+        <!-- 系统模块 -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-system</artifactId>
+        </dependency>
+
         <!-- PostgreSQL驱动 -->
         <dependency>
             <groupId>org.postgresql</groupId>

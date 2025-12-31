@@ -72,13 +72,16 @@
           </template>
         </el-table-column>
         <el-table-column v-if="columns[7].visible" label="创建时间" align="center" prop="createTime" width="180" />
-        <el-table-column label="操作" fixed="right" width="180" class-name="small-padding fixed-width">
+        <el-table-column label="操作" fixed="right" width="200" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-tooltip content="修改" placement="top">
               <el-button v-hasPermi="['compliance:regulation:edit']" link type="primary" icon="Edit" @click="handleUpdate(scope.row)"></el-button>
             </el-tooltip>
             <el-tooltip content="删除" placement="top">
               <el-button v-hasPermi="['compliance:regulation:remove']" link type="primary" icon="Delete" @click="handleDelete(scope.row)"></el-button>
+            </el-tooltip>
+            <el-tooltip content="下载" placement="top" v-if="scope.row.fileUrl">
+              <el-button v-hasPermi="['compliance:regulation:query']" link type="primary" icon="Download" @click="handleDownload(scope.row)"></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -129,6 +132,12 @@
           <el-col :span="24">
             <el-form-item label="法规文件" prop="fileUrl">
               <file-upload v-model="form.fileUrl" :limit="1" :file-size="50" :file-type="['pdf', 'doc', 'docx']" />
+              <!-- 下载按钮 -->
+              <div v-if="form.fileUrl && fileName" class="file-info-display">
+                <el-button type="success" icon="Download" @click="handleDownloadInDialog">
+                  下载已上传的文件
+                </el-button>
+              </div>
             </el-form-item>
           </el-col>
         </el-row>
@@ -195,6 +204,7 @@ const initFormData: RegulationForm = {
   effectiveDate: '',
   status: '0',
   fileUrl: '',
+  fileName: '',
   fileSize: undefined,
   remark: ''
 };
@@ -217,6 +227,11 @@ const initData: PageData<RegulationForm, RegulationQuery> = {
 
 const data = reactive<PageData<RegulationForm, RegulationQuery>>(initData);
 const { queryParams, form, rules } = toRefs<PageData<RegulationForm, RegulationQuery>>(data);
+
+/** 计算文件名 */
+const fileName = computed(() => {
+  return form.value.fileName || '';
+});
 
 /** 查询法规列表 */
 const getList = async () => {
@@ -253,6 +268,7 @@ const handleStatusChange = async (row: RegulationVO) => {
       effectiveDate: row.effectiveDate,
       status: row.status,
       fileUrl: row.fileUrl,
+      fileName: row.fileName,
       fileSize: row.fileSize,
       remark: row.remark
     });
@@ -333,6 +349,32 @@ const formatFileSize = (bytes?: number): string => {
   return (bytes / 1024 / 1024).toFixed(2) + ' MB';
 };
 
+/** 下载法规文件 */
+const handleDownload = async (row: RegulationVO) => {
+  if (!row.fileUrl) {
+    proxy?.$modal.msgWarning('该法规没有上传文件');
+    return;
+  }
+  try {
+    await proxy?.$download.oss(row.fileUrl);
+  } catch (err) {
+    console.error('下载文件失败:', err);
+  }
+};
+
+/** 在编辑对话框中下载法规文件 */
+const handleDownloadInDialog = async () => {
+  if (!form.value.fileUrl) {
+    proxy?.$modal.msgWarning('该法规没有上传文件');
+    return;
+  }
+  try {
+    await proxy?.$download.oss(form.value.fileUrl);
+  } catch (err) {
+    console.error('下载文件失败:', err);
+  }
+};
+
 /**
  * 关闭法规弹窗
  */
@@ -345,3 +387,15 @@ onMounted(() => {
   getList();
 });
 </script>
+
+<style scoped>
+.file-info-display {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background-color: #f5f7fa;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+}
+</style>
+
